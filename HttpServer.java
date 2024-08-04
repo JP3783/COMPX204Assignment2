@@ -18,11 +18,28 @@ class HttpServer{
                 return;
             }
 
-            //Prints to the output so I can see what port number it is getting
-            System.out.println("port number: " + serverSocket.getLocalPort());
-            serverSocket.close();
+            while(true){
+                //Wait for new connection request and accept it
+                Socket socket = serverSocket.accept();
+                //Spawn a thread to then process that connection
+                HttpServerSession sessionThread = new HttpServerSession(socket);
+
+                serverSocket.close();
+            }
+
+            // //Prints to the output so I can see what port number it is getting
+            // System.out.println("port number: " + serverSocket.getLocalPort());
+            
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
+    }
+}
+
+class HttpServerSession extends Thread{
+    private Socket clientSocket;
+
+    public  HttpServerSession(Socket s){
+        this.clientSocket = s;
     }
 }
