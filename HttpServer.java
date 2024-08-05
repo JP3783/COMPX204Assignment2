@@ -38,8 +38,21 @@ class HttpServer{
 
 class HttpServerSession extends Thread{
     private Socket clientSocket;
+    private BufferedReader reader;
 
     public  HttpServerSession(Socket s){
         this.clientSocket = s;
+    }
+
+    public void run(){
+        try{
+            reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+            while(reader.readLine() != null){
+                
+            }
+        } catch(Exception e){
+            System.err.println(e.getMessage());
+        }
     }
 }
