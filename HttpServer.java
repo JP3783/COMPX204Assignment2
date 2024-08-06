@@ -5,31 +5,25 @@ import java.util.*;
 class HttpServer{
     public static void main(String[] args) {
         //Print a line to the output to indicate the programing is starting
-        System.out.println("Web Server Starting");
+        System.out.println("Web Server Starting...");
         
         try {
-            //Initialise the serverSocket
-            ServerSocket serverSocket = new ServerSocket(0);
+            //Initialise the serverSocket with a hard-coded port number
+            ServerSocket serverSocket = new ServerSocket(55535);
 
-            //This is just here to make sure we get a port number between 50,000 and 65535
-            if(serverSocket.getLocalPort() > 65535 || serverSocket.getLocalPort() < 50000){
-                System.out.println("port number invalid");
-                serverSocket.close();
-                return;
-            }
-
+            //Loop around, accepting new connections as they arrive
             while(true){
                 //Wait for new connection request and accept it
                 Socket socket = serverSocket.accept();
+                //Indicate connection has been made and its IP address
+                System.out.println("Connected (:");
+                System.out.println("IP address is " + socket.getInetAddress());
+
                 //Spawn a thread to then process that connection
                 HttpServerSession sessionThread = new HttpServerSession(socket);
-
-                serverSocket.close();
+                sessionThread.start();
+                // serverSocket.close();
             }
-
-            // //Prints to the output so I can see what port number it is getting
-            // System.out.println("port number: " + serverSocket.getLocalPort());
-            
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -37,22 +31,47 @@ class HttpServer{
 }
 
 class HttpServerSession extends Thread{
-    private Socket clientSocket;
+    //Declare private variables
+    private Socket privateSocket;
     private BufferedReader reader;
 
-    public  HttpServerSession(Socket s){
-        this.clientSocket = s;
+    public HttpServerSession(Socket socket){
+        this.privateSocket = socket;
     }
 
     public void run(){
         try{
-            reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            //Declare a BufferedReader that is connected to the socket's InputStream
+            reader = new BufferedReader(new InputStreamReader(privateSocket.getInputStream()));
+            
+            String line = reader.readLine();
+            //Add an empty line
+            System.out.println("");
 
-            while(reader.readLine() != null){
-                
+            while(line != null){
+                //Prints out the request to the console
+                System.out.println(line);
+                line = reader.readLine();
             }
+            println(privateSocket.getOutputStream(), "HTTP/1.1 200 OK");
+
+            println(privateSocket.getOutputStream(), "");
+            println(privateSocket.getOutputStream(), "Hello World");
+
+            privateSocket.close();
         } catch(Exception e){
             System.err.println(e.getMessage());
         }
+    }
+
+    private boolean println(OutputStream bos, String s){
+        String news = s + "\r\n";
+        byte[] array = news.getBytes();
+        try {
+            bos.write(array, 0, array.length);
+        } catch(IOException e) {
+            return false;
+        }
+        return true;
     }
 }
