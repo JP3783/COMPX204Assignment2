@@ -22,7 +22,7 @@ class HttpServer{
                 //Spawn a thread to then process that connection
                 HttpServerSession sessionThread = new HttpServerSession(socket);
                 sessionThread.start();
-                // serverSocket.close();
+
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -34,6 +34,7 @@ class HttpServerSession extends Thread{
     //Declare private variables
     private Socket privateSocket;
     private BufferedReader reader;
+    private BufferedOutputStream out;
 
     public HttpServerSession(Socket socket){
         this.privateSocket = socket;
@@ -43,20 +44,25 @@ class HttpServerSession extends Thread{
         try{
             //Declare a BufferedReader that is connected to the socket's InputStream
             reader = new BufferedReader(new InputStreamReader(privateSocket.getInputStream()));
-            
+            //Declare a BufferedOutputStream and parse in the outputStream from the private socket
+            out = new BufferedOutputStream(privateSocket.getOutputStream());
+            //Create a string variable to store each line
             String line = reader.readLine();
             //Add an empty line
             System.out.println("");
 
-            while(line != null){
+            while(line != null && line != "" && !line.isEmpty()){
                 //Prints out the request to the console
                 System.out.println(line);
                 line = reader.readLine();
             }
-            println(privateSocket.getOutputStream(), "HTTP/1.1 200 OK");
-
-            println(privateSocket.getOutputStream(), "");
-            println(privateSocket.getOutputStream(), "Hello World");
+            // sleep idle for 2s
+			Thread.sleep(2000);
+            println(out, "HTTP/1.1 200 OK");
+            println(out, "");
+            println(out, "Hello World");
+            
+            
 
             privateSocket.close();
         } catch(Exception e){
@@ -64,7 +70,7 @@ class HttpServerSession extends Thread{
         }
     }
 
-    private boolean println(OutputStream bos, String s){
+    private boolean println(BufferedOutputStream bos, String s){
         String news = s + "\r\n";
         byte[] array = news.getBytes();
         try {
