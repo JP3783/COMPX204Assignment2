@@ -40,6 +40,9 @@ class HttpServerSession extends Thread{
         this.privateSocket = socket;
     }
 
+    /**
+     * This is the run method which executes the communication with the server. Includes reading the response and outputing it to the console.
+     */
     public void run(){
         try{
             //Declare a BufferedReader that is connected to the socket's InputStream
@@ -47,37 +50,45 @@ class HttpServerSession extends Thread{
             //Declare a BufferedOutputStream and parse in the outputStream from the private socket
             out = new BufferedOutputStream(privateSocket.getOutputStream());
             //Create a string variable to store each line
-            String line = reader.readLine();
+            String line;
             //Add an empty line
             System.out.println("");
-
-            while(line != null && line != "" && !line.isEmpty()){
-                //Prints out the request to the console
+            //Loop through response to print it to the output
+            while((line = reader.readLine()) != null && !line.isEmpty()){
                 System.out.println(line);
-                line = reader.readLine();
             }
-            // sleep idle for 2s
-			Thread.sleep(2000);
-            println(out, "HTTP/1.1 200 OK");
-            println(out, "");
-            println(out, "Hello World");
-            
-            
+            //Send the 200 message
+            sendResponse("HTTP/1.1 200 OK");
+            sendResponse("Content-Type: text/plain; charset=UTF-8");
+            sendResponse("Content-Length: 11"); // Length of "Hello World"
+            sendResponse(""); // Empty line to end the header
+            //Send the "Hello World" text
+            sendResponse("Hello World");
 
+            //Close the resources
+            out.flush();
             privateSocket.close();
         } catch(Exception e){
             System.err.println(e.getMessage());
+        } finally { //This is to make sure that everything is closed after beind used
+            try {
+                if (reader != null) reader.close();
+                if (out != null) out.close();
+                if (privateSocket != null && !privateSocket.isClosed()) privateSocket.close();
+            } catch (IOException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
         }
     }
 
-    private boolean println(BufferedOutputStream bos, String s){
-        String news = s + "\r\n";
-        byte[] array = news.getBytes();
-        try {
-            bos.write(array, 0, array.length);
-        } catch(IOException e) {
-            return false;
-        }
-        return true;
+    /**
+     * A method that mimics the println method but follows the HTTP requirements
+     * @param response message to send 
+     * @throws IOException any IOExceptions which might occur
+     */
+    private void sendResponse(String response) throws IOException{
+        String formattedResponse = response + "\r\n";
+        byte[] responseBytes = formattedResponse.getBytes("UTF-8");
+        out.write(responseBytes);
     }
 }
