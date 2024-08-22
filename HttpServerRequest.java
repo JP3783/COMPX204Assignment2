@@ -2,7 +2,7 @@ public class HttpServerRequest {
     private String file = null;
     private String host = null;
     private boolean done = false;
-    private int line = 0;
+    private int lineNumber = 0;
 
     public boolean isDone() { return done; }
     public String getFile() { return file; }
@@ -12,10 +12,29 @@ public class HttpServerRequest {
 	 * process the line, setting 'done' when HttpServerSession should
 	 * examine the contents of the request using getFile and getHost
 	 */
-    public void process(String in){
-        String parts[] = in.split(" ");
+    public void process(String line){
+        //If it is the first line
+        if(lineNumber == 0){
+            //Split the first line into parts
+            String parts[] = line.split(" ");        
 
-        //First part
-        
+            //Check if it contains 3 parts and if it contains the "GET" method
+            if(parts.length == 3 && parts[0].compareTo("GET") == 0){
+                //substring() method: returns everything after the 1st character in the string
+                //Basically removes the leading "/"
+                String filename = parts[1].substring(1);
+                //If filename is empty, set filename to index.html
+                if(filename.isEmpty()){
+                    filename = "index.html";
+                }
+            }
+        } else if(line.startsWith("Host: ")){
+            //Set host
+            host = line.substring(6);
+        }
+        //Increment the line number
+        lineNumber++;
+        //Set done to true
+        done = true;
     }
 }

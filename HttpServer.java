@@ -44,6 +44,8 @@ class HttpServerSession extends Thread{
      * This is the run method which executes the communication with the server. Includes reading the response and outputing it to the console.
      */
     public void run(){
+        //Declare a HttpServerRequest instance
+        HttpServerRequest request = new HttpServerRequest();
         try{
             //Declare a BufferedReader that is connected to the socket's InputStream
             reader = new BufferedReader(new InputStreamReader(privateSocket.getInputStream()));
@@ -56,6 +58,8 @@ class HttpServerSession extends Thread{
             //Loop through response to print it to the output
             while((line = reader.readLine()) != null && !line.isEmpty()){
                 System.out.println(line);
+                //Call the process method using the HttpServerRequest
+                request.process(line);
             }
             //Send the 200 message
             sendResponse("HTTP/1.1 200 OK");
