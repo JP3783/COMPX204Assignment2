@@ -55,12 +55,26 @@ class HttpServerSession extends Thread{
             String line;
             //Add an empty line
             System.out.println("");
-            //Loop through response to print it to the output
-            while((line = reader.readLine()) != null && !line.isEmpty()){
-                System.out.println(line);
-                //Call the process method using the HttpServerRequest
+            // //Loop through response to print it to the output
+            // while((line = reader.readLine()) != null && !line.isEmpty()){
+            //     System.out.println(line);
+            //     //Call the process method using the HttpServerRequest
+            //     request.process(line);
+            // }
+
+            while(request.isDone() == true){
+                line = reader.readLine();
                 request.process(line);
             }
+
+            // String host = request.getHost();
+            // String file = request.getFile();
+            // if(host == null){
+            //     host = "localhost:55535";
+            // }
+            // String filePath = host + "/" + file;
+            // File requestedFile = new File(filePath);
+
             //Send the 200 message
             sendResponse("HTTP/1.1 200 OK");
             sendResponse("Content-Type: text/plain; charset=UTF-8");
