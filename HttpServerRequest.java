@@ -1,5 +1,3 @@
-import java.io.FileInputStream;
-
 public class HttpServerRequest {
     private String file = null;
     private String host = null;

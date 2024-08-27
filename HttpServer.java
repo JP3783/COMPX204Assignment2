@@ -1,6 +1,5 @@
 import java.net.*;
 import java.io.*;
-import java.util.*;
 
 class HttpServer{
     public static void main(String[] args) {
@@ -66,14 +65,6 @@ class HttpServerSession extends Thread{
                 line = reader.readLine();
                 request.process(line);
             }
-
-            // String host = request.getHost();
-            // String file = request.getFile();
-            // if(host == null){
-            //     host = "localhost:55535";
-            // }
-            // String filePath = host + "/" + file;
-            // File requestedFile = new File(filePath);
 
             //Send the 200 message
             sendResponse("HTTP/1.1 200 OK");
