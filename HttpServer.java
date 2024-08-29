@@ -61,8 +61,9 @@ class HttpServerSession extends Thread{
             //     request.process(line);
             // }
 
-            while(request.isDone() == true){
+            while(request.isDone() == false){
                 line = reader.readLine();
+                System.out.println(line); //Just so I can see it outputs
                 request.process(line);
             }
 
