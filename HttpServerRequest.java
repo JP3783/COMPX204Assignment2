@@ -3,7 +3,6 @@ public class HttpServerRequest {
     private String host = null;
     private boolean done = false;
     private int lineNumber = 0;
-    private String filename = null;
 
     public boolean isDone() { return done; }
     public String getFile() { return file; }
@@ -23,10 +22,10 @@ public class HttpServerRequest {
             if(parts.length == 3 && parts[0].compareTo("GET") == 0){
                 //substring() method: returns everything after the 1st character in the string
                 //Basically removes the leading "/"
-                filename = parts[1].substring(1);
-                //If filename is empty, set filename to index.html
-                if(filename.isEmpty()){
-                    filename = "index.html";
+                file = parts[1].substring(1);
+                //If file is empty, set file to index.html
+                if(file.isEmpty()){
+                    file = "index.html";
                 }
             }
         } else if(line.startsWith("Host: ")){

@@ -7,21 +7,21 @@ class HttpServer{
         System.out.println("Web Server Starting...");
         
         try {
-            //Initialise the serverSocket with a hard-coded port number
-            ServerSocket serverSocket = new ServerSocket(55535);
+            try (//Initialise the serverSocket with a hard-coded port number
+            ServerSocket serverSocket = new ServerSocket(55535)) {
+                //Loop around, accepting new connections as they arrive
+                while(true){
+                    //Wait for new connection request and accept it
+                    Socket socket = serverSocket.accept();
+                    //Indicate connection has been made and its IP address
+                    System.out.println("Connected (:");
+                    System.out.println("IP address is " + socket.getInetAddress());
 
-            //Loop around, accepting new connections as they arrive
-            while(true){
-                //Wait for new connection request and accept it
-                Socket socket = serverSocket.accept();
-                //Indicate connection has been made and its IP address
-                System.out.println("Connected (:");
-                System.out.println("IP address is " + socket.getInetAddress());
+                    //Spawn a thread to then process that connection
+                    HttpServerSession sessionThread = new HttpServerSession(socket);
+                    sessionThread.start();
 
-                //Spawn a thread to then process that connection
-                HttpServerSession sessionThread = new HttpServerSession(socket);
-                sessionThread.start();
-
+                }
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -60,31 +60,70 @@ class HttpServerSession extends Thread{
             //     //Call the process method using the HttpServerRequest
             //     request.process(line);
             // }
-
-            while(request.isDone() == false){
+            while(!request.isDone()){
                 line = reader.readLine();
-                System.out.println(line); //Just so I can see it outputs
+                System.out.println(line); //Output for debugging
                 request.process(line);
             }
 
-            //Send the 200 message
-            sendResponse("HTTP/1.1 200 OK");
-            sendResponse("Content-Type: text/plain; charset=UTF-8");
-            sendResponse("Content-Length: 11"); // Length of "Hello World"
-            sendResponse(""); // Empty line to end the header
-            //Send the "Hello World" text
-            sendResponse("Hello World");
+
+
+            //If it exists, get the file and the host
+            // if(!request.getFile().isEmpty() && !request.getHost().isEmpty()){        //do i need to add something to check if they exist or...
+                
+            // }
+            String host = request.getHost();
+            String file = request.getFile();
+            if(host == null){
+                host = "localhost";
+            }
+            
+            //Make a filepath
+            String filePath = host + "/" + file;
+            
+            try(FileInputStream fileInputStream = new FileInputStream(filePath)){
+                //Declare a byteArray with a fixed size
+                byte[] byteArray = new byte[8192]; //this is 8KB
+                int bytesRead;
+
+                while((bytesRead = fileInputStream.read(byteArray)) != -1){
+                    out.write(byteArray, 0, bytesRead);
+                }
+                out.flush();
+            } catch(FileNotFoundException e){
+                //Handle file not found (send 404 response)
+                sendResponse("HTTP/1.1 404 Not Found");
+                sendResponse("Content-Type: text/plain; charset=UTF-8");
+                sendResponse("Content-Length: 13"); // Length of "404 Not Found"
+                sendResponse(""); // End of headers
+                sendResponse("404 Not Found");
+            } catch(IOException exception){
+                System.err.println("Error reading file: " + exception.getMessage());
+            }
+
+            // //Send the 200 message
+            // sendResponse("HTTP/1.1 200 OK");
+            // sendResponse("Content-Type: text/plain; charset=UTF-8");
+            // sendResponse("Content-Length: 11"); // Length of "Hello World"
+            // sendResponse(""); // Empty line to end the header
+            // //Send the "Hello World" text
+            // sendResponse("Hello World");
 
             //Close the resources
-            out.flush();
-            privateSocket.close();
+            // privateSocket.close();
         } catch(Exception e){
             System.err.println(e.getMessage());
         } finally { //This is to make sure that everything is closed after beind used
             try {
-                if (reader != null) reader.close();
-                if (out != null) out.close();
-                if (privateSocket != null && !privateSocket.isClosed()) privateSocket.close();
+                if (reader != null) {
+                    reader.close();
+                }
+                if (out != null) {
+                    out.close();
+                }
+                if (privateSocket != null && !privateSocket.isClosed()) {
+                    privateSocket.close();
+                }
             } catch (IOException e) {
                 System.err.println("Error closing resources: " + e.getMessage());
             }
