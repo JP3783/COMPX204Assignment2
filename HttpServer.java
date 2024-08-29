@@ -113,21 +113,22 @@ class HttpServerSession extends Thread{
             // privateSocket.close();
         } catch(Exception e){
             System.err.println(e.getMessage());
-        } finally { //This is to make sure that everything is closed after beind used
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
-                if (privateSocket != null && !privateSocket.isClosed()) {
-                    privateSocket.close();
-                }
-            } catch (IOException e) {
-                System.err.println("Error closing resources: " + e.getMessage());
-            }
         }
+        // } finally { //This is to make sure that everything is closed after beind used
+        //     try {
+        //         if (reader != null) {
+        //             reader.close();
+        //         }
+        //         if (out != null) {
+        //             out.close();
+        //         }
+        //         if (privateSocket != null && !privateSocket.isClosed()) {
+        //             privateSocket.close();
+        //         }
+        //     } catch (IOException e) {
+        //         System.err.println("Error closing resources: " + e.getMessage());
+        //     }
+        // }
     }
 
     /**
