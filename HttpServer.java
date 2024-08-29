@@ -62,7 +62,8 @@ class HttpServerSession extends Thread{
             // }
             while(!request.isDone()){
                 line = reader.readLine();
-                System.out.println(line); //Output for debugging
+                // System.out.println(line); //Output for debugging
+                //Call the process method using the HttpServerRequest
                 request.process(line);
             }
 
@@ -72,6 +73,7 @@ class HttpServerSession extends Thread{
             // }
             String host = request.getHost();
             String file = request.getFile();
+            //If host is null, set it to "localhost"
             if(host == null){
                 host = "localhost";
             }
@@ -82,10 +84,13 @@ class HttpServerSession extends Thread{
             String contentType = getContentType(file);
             
             try(FileInputStream fileInputStream = new FileInputStream(filePath)){
+                //Log the file found
+                System.out.println("File found: " + filePath);
                 //Send 200 OK response
                 sendResponse("HTTP/1.1 200 OK");
                 //Send contentType header
                 sendResponse("Content-Type: " + contentType);
+                //Add an empty line
                 sendResponse("");
 
                 //Declare a byteArray with a fixed size
@@ -98,6 +103,8 @@ class HttpServerSession extends Thread{
 
                 out.flush();
             } catch(FileNotFoundException e){
+                //Log the file not found
+                System.out.println("File Not Found: " + filePath);
                 //Handle file not found (send 404 response)
                 sendResponse("HTTP/1.1 404 Not Found");
                 sendResponse("Content-Type: text/plain; charset=UTF-8");
@@ -148,6 +155,11 @@ class HttpServerSession extends Thread{
         out.write(responseBytes);
     }
 
+    /**
+     * This method determines the content type based on the file extension
+     * @param file the name of the file
+     * @return the content type string
+     */
     private String getContentType(String file) {
         if (file.endsWith(".html")) {
             return "text/html; charset=UTF-8";
@@ -162,7 +174,7 @@ class HttpServerSession extends Thread{
         } else if (file.endsWith(".js")) {
             return "application/javascript";
         } else {
-            return "application/octet-stream"; // default binary type
+            return "application/octet-stream"; //Default binary type
         }
     }
 }
