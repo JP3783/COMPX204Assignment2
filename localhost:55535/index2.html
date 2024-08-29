@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Complex Web Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            margin: 20px 0;
+        }
+        nav a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #333;
+        }
+        section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Welcome to My Complex Web Page</h1>
+    <p>A demonstration of various HTML elements</p>
+</header>
+
+<nav>
+    <a href="#about">About</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<section id="about">
+    <h2>About Me</h2>
+    <p>Hello! I'm a web developer who loves creating interactive and visually appealing websites. This page is a demonstration of various HTML elements you can use to build a complex webpage.</p>
+</section>
+
+<section id="gallery">
+    <h2>Gallery</h2>
+    <p>Here are some of my favorite images:</p>
+    <img src="image1.jpg" alt="A beautiful landscape">
+    <img src="image2.jpg" alt="A serene beach">
+</section>
+
+<section id="contact">
+    <h2>Contact Me</h2>
+    <form action="/submit-form" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="message">Message:</label><br>
+        <textarea id="message" name="message" rows="5" cols="30" required></textarea><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</section>
+
+<section id="table">
+    <h2>My Favorite Programming Languages</h2>
+    <table>
+        <tr>
+            <th>Language</th>
+            <th>Usage</th>
+            <th>Popularity</th>
+        </tr>
+        <tr>
+            <td>Python</td>
+            <td>Data Science, Web Development</td>
+            <td>High</td>
+        </tr>
+        <tr>
+            <td>JavaScript</td>
+            <td>Web Development</td>
+            <td>High</td>
+        </tr>
+        <tr>
+            <td>Java</td>
+            <td>Enterprise Applications</td>
+            <td>High</td>
+        </tr>
+    </table>
+</section>
+
+<footer>
+    <p>&copy; 2024 My Complex Web Page. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

@@ -66,8 +66,6 @@ class HttpServerSession extends Thread{
                 request.process(line);
             }
 
-
-
             //If it exists, get the file and the host
             // if(!request.getFile().isEmpty() && !request.getHost().isEmpty()){        //do i need to add something to check if they exist or...
                 
@@ -80,8 +78,16 @@ class HttpServerSession extends Thread{
             
             //Make a filepath
             String filePath = host + "/" + file;
+            //Declare the contentType variable
+            String contentType = getContentType(file);
             
             try(FileInputStream fileInputStream = new FileInputStream(filePath)){
+                //Send 200 OK response
+                sendResponse("HTTP/1.1 200 OK");
+                //Send contentType header
+                sendResponse("Content-Type: " + contentType);
+                sendResponse("");
+
                 //Declare a byteArray with a fixed size
                 byte[] byteArray = new byte[8192]; //this is 8KB
                 int bytesRead;
@@ -89,6 +95,7 @@ class HttpServerSession extends Thread{
                 while((bytesRead = fileInputStream.read(byteArray)) != -1){
                     out.write(byteArray, 0, bytesRead);
                 }
+
                 out.flush();
             } catch(FileNotFoundException e){
                 //Handle file not found (send 404 response)
@@ -113,22 +120,21 @@ class HttpServerSession extends Thread{
             // privateSocket.close();
         } catch(Exception e){
             System.err.println(e.getMessage());
+        } finally { //This is to make sure that everything is closed after beind used
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+                if (out != null) {
+                    out.close();
+                }
+                if (privateSocket != null && !privateSocket.isClosed()) {
+                    privateSocket.close();
+                }
+            } catch (IOException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
         }
-        // } finally { //This is to make sure that everything is closed after beind used
-        //     try {
-        //         if (reader != null) {
-        //             reader.close();
-        //         }
-        //         if (out != null) {
-        //             out.close();
-        //         }
-        //         if (privateSocket != null && !privateSocket.isClosed()) {
-        //             privateSocket.close();
-        //         }
-        //     } catch (IOException e) {
-        //         System.err.println("Error closing resources: " + e.getMessage());
-        //     }
-        // }
     }
 
     /**
@@ -140,5 +146,23 @@ class HttpServerSession extends Thread{
         String formattedResponse = response + "\r\n";
         byte[] responseBytes = formattedResponse.getBytes("UTF-8");
         out.write(responseBytes);
+    }
+
+    private String getContentType(String file) {
+        if (file.endsWith(".html")) {
+            return "text/html; charset=UTF-8";
+        } else if (file.endsWith(".png")) {
+            return "image/png";
+        } else if (file.endsWith(".jpg") || file.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else if (file.endsWith(".gif")) {
+            return "image/gif";
+        } else if (file.endsWith(".css")) {
+            return "text/css";
+        } else if (file.endsWith(".js")) {
+            return "application/javascript";
+        } else {
+            return "application/octet-stream"; // default binary type
+        }
     }
 }
