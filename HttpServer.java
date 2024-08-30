@@ -5,7 +5,6 @@ class HttpServer{
     public static void main(String[] args) {
         //Print a line to the output to indicate the programing is starting
         System.out.println("Web Server Starting...");
-        
         try {
             try (//Initialise the serverSocket with a hard-coded port number
             ServerSocket serverSocket = new ServerSocket(55535)) {
@@ -16,11 +15,9 @@ class HttpServer{
                     //Indicate connection has been made and its IP address
                     System.out.println("Connected (:");
                     System.out.println("IP address is " + socket.getInetAddress());
-
                     //Spawn a thread to then process that connection
                     HttpServerSession sessionThread = new HttpServerSession(socket);
                     sessionThread.start();
-
                 }
             }
         } catch (Exception e) {
@@ -63,11 +60,10 @@ class HttpServerSession extends Thread{
             while(!request.isDone()){
                 line = reader.readLine();
                 // System.out.println(line); //Output for debugging
-                //Call the process method using the HttpServerRequest
-                request.process(line);
+                request.process(line);     //Call the process method using the HttpServerRequest
             }
 
-            //If it exists, get the file and the host
+            // //If it exists, get the file and the host
             // if(!request.getFile().isEmpty() && !request.getHost().isEmpty()){        //do i need to add something to check if they exist or...
                 
             // }
@@ -99,12 +95,14 @@ class HttpServerSession extends Thread{
 
                 while((bytesRead = fileInputStream.read(byteArray)) != -1){
                     out.write(byteArray, 0, bytesRead);
+                    //Add method to make it go slow when sending a file back
+                    sleep(1000);
                 }
 
                 out.flush();
             } catch(FileNotFoundException e){
                 //Log the file not found
-                System.out.println("File Not Found: " + filePath);
+                System.out.println("404 File Not Found: " + filePath);
                 //Handle file not found (send 404 response)
                 sendResponse("HTTP/1.1 404 Not Found");
                 sendResponse("Content-Type: text/plain; charset=UTF-8");
