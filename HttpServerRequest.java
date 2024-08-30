@@ -1,3 +1,6 @@
+//Name: Justin Poutoa
+//ID: 1620107
+
 public class HttpServerRequest {
     private String file = null;
     private String host = null;
@@ -17,7 +20,6 @@ public class HttpServerRequest {
         if(lineNumber == 0){
             //Split the first line into parts
             String parts[] = line.split(" ");        
-
             //Check if it contains 3 parts and if it contains the "GET" method
             if(parts.length == 3 && parts[0].compareTo("GET") == 0){
                 //substring() method: returns everything after the 1st character in the string

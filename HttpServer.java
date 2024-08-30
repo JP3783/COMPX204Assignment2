@@ -1,3 +1,6 @@
+//Name: Justin Poutoa
+//ID: 1620107
+
 import java.net.*;
 import java.io.*;
 
@@ -32,6 +35,10 @@ class HttpServerSession extends Thread{
     private BufferedReader reader;
     private BufferedOutputStream out;
 
+    /**
+     * This is the constructor of the class.
+     * @param socket endpoint for communication between client and server
+     */
     public HttpServerSession(Socket socket){
         this.privateSocket = socket;
     }
@@ -51,34 +58,23 @@ class HttpServerSession extends Thread{
             String line;
             //Add an empty line
             System.out.println("");
-            // //Loop through response to print it to the output
-            // while((line = reader.readLine()) != null && !line.isEmpty()){
-            //     System.out.println(line);
-            //     //Call the process method using the HttpServerRequest
-            //     request.process(line);
-            // }
+            //While isDone is false
             while(!request.isDone()){
                 line = reader.readLine();
                 // System.out.println(line); //Output for debugging
                 request.process(line);     //Call the process method using the HttpServerRequest
             }
-
-            // //If it exists, get the file and the host
-            // if(!request.getFile().isEmpty() && !request.getHost().isEmpty()){        //do i need to add something to check if they exist or...
-                
-            // }
+            //Get the host and the file
             String host = request.getHost();
             String file = request.getFile();
             //If host is null, set it to "localhost"
             if(host == null){
                 host = "localhost";
             }
-            
             //Make a filepath
             String filePath = host + "/" + file;
             //Declare the contentType variable
             String contentType = getContentType(file);
-            
             try(FileInputStream fileInputStream = new FileInputStream(filePath)){
                 //Log the file found
                 System.out.println("File found: " + filePath);
@@ -88,17 +84,17 @@ class HttpServerSession extends Thread{
                 sendResponse("Content-Type: " + contentType);
                 //Add an empty line
                 sendResponse("");
-
                 //Declare a byteArray with a fixed size
                 byte[] byteArray = new byte[8192]; //this is 8KB
                 int bytesRead;
-
+                //While the fileInputStream is reading to the end of the file
                 while((bytesRead = fileInputStream.read(byteArray)) != -1){
+                    //Print it out
                     out.write(byteArray, 0, bytesRead);
                     //Add method to make it go slow when sending a file back
                     sleep(1000);
                 }
-
+                //Forces everything to be written to the output stream
                 out.flush();
             } catch(FileNotFoundException e){
                 //Log the file not found
@@ -112,17 +108,6 @@ class HttpServerSession extends Thread{
             } catch(IOException exception){
                 System.err.println("Error reading file: " + exception.getMessage());
             }
-
-            // //Send the 200 message
-            // sendResponse("HTTP/1.1 200 OK");
-            // sendResponse("Content-Type: text/plain; charset=UTF-8");
-            // sendResponse("Content-Length: 11"); // Length of "Hello World"
-            // sendResponse(""); // Empty line to end the header
-            // //Send the "Hello World" text
-            // sendResponse("Hello World");
-
-            //Close the resources
-            // privateSocket.close();
         } catch(Exception e){
             System.err.println(e.getMessage());
         } finally { //This is to make sure that everything is closed after beind used
