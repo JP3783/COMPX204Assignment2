@@ -2,6 +2,7 @@
 //ID: 1620107
 
 public class HttpServerRequest {
+    //Declare variables
     private String file = null;
     private String host = null;
     private boolean done = false;
@@ -32,12 +33,12 @@ public class HttpServerRequest {
             }
         } else if(line.startsWith("Host: ")){
             //Set host
-            host = line.substring(6);
+            host = line.substring(6).trim();
         }
         //Increment the line number
         lineNumber++;
         //Set done to true
-        if(line.isEmpty()){
+        if(line == null || line.isEmpty()){
             done = true;
         }
     }

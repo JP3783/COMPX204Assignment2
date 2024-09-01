@@ -5,6 +5,9 @@ import java.net.*;
 import java.io.*;
 
 class HttpServer{
+    /**
+     * This is the main method - entry point.
+     */
     public static void main(String[] args) {
         //Print a line to the output to indicate the programing is starting
         System.out.println("Web Server Starting...");
@@ -16,8 +19,9 @@ class HttpServer{
                     //Wait for new connection request and accept it
                     Socket socket = serverSocket.accept();
                     //Indicate connection has been made and its IP address
+                    System.out.println("");
                     System.out.println("Connected (:");
-                    System.out.println("IP address is " + socket.getInetAddress());
+                    System.out.println("Connection received from " + socket.getInetAddress());
                     //Spawn a thread to then process that connection
                     HttpServerSession sessionThread = new HttpServerSession(socket);
                     sessionThread.start();
@@ -56,8 +60,6 @@ class HttpServerSession extends Thread{
             out = new BufferedOutputStream(privateSocket.getOutputStream());
             //Create a string variable to store each line
             String line;
-            //Add an empty line
-            System.out.println("");
             //While isDone is false
             while(!request.isDone()){
                 line = reader.readLine();
@@ -99,11 +101,13 @@ class HttpServerSession extends Thread{
             } catch(FileNotFoundException e){
                 //Log the file not found
                 System.out.println("404 File Not Found: " + filePath);
+                String notFoundMessage = file + " not found";
                 //Handle file not found (send 404 response)
                 sendResponse("HTTP/1.1 404 Not Found");
                 sendResponse("Content-Type: text/plain; charset=UTF-8");
-                sendResponse("Content-Length: 13"); // Length of "404 Not Found"
-                sendResponse(""); // End of headers
+                sendResponse("Content-Length: " + (notFoundMessage.length() + 26));
+                sendResponse(""); //End of headers
+                //Send the HTML content
                 sendResponse("404 Not Found");
             } catch(IOException exception){
                 System.err.println("Error reading file: " + exception.getMessage());
@@ -112,12 +116,6 @@ class HttpServerSession extends Thread{
             System.err.println(e.getMessage());
         } finally { //This is to make sure that everything is closed after beind used
             try {
-                if (reader != null) {
-                    reader.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
                 if (privateSocket != null && !privateSocket.isClosed()) {
                     privateSocket.close();
                 }
